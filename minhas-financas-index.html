@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas Finanças</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-flex">
+  <nav class="sidebar">
+    <div class="brand"><em>§</em> Minhas Finanças</div>
+    <div class="brand-sub">controle financeiro pessoal</div>
+
+    <div class="nav-item active" data-page="dashboard"><span class="num">00</span> Visão geral</div>
+    <div class="nav-item" data-page="fixas"><span class="num">01</span> Contas fixas</div>
+    <div class="nav-item" data-page="variaveis"><span class="num">02</span> Contas variáveis</div>
+    <div class="nav-item" data-page="parcelas"><span class="num">03</span> Parcelamentos</div>
+    <div class="nav-item" data-page="projetos"><span class="num">04</span> Projetos & metas</div>
+    <div class="nav-item" data-page="perfil"><span class="num">05</span> Sobre mim</div>
+
+    <div class="sidebar-foot">Os dados ficam salvos neste navegador, neste aparelho.</div>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Visão geral</h1>
+          <p class="page-desc">Seu salário, tudo que já está lançado como despesa este mês, e o que sobra no final.</p>
+        </div>
+      </div>
+
+      <div class="hero-calc">
+        <div class="hero-item">
+          <div class="hero-label">Receita mensal</div>
+          <div class="hero-value pos mono" id="heroReceita">R$ 0,00</div>
+          <input type="number" id="rendaInput" placeholder="informar salário" class="hero-input">
+        </div>
+        <div class="hero-op">−</div>
+        <div class="hero-item">
+          <div class="hero-label">Despesas do mês</div>
+          <div class="hero-value neg mono" id="heroDespesas">R$ 0,00</div>
+          <div class="hero-sub">fixas + variáveis + parcelas</div>
+        </div>
+        <div class="hero-op">=</div>
+        <div class="hero-item hero-result">
+          <div class="hero-label">Sobra no final do mês</div>
+          <div class="hero-value mono" id="heroSaldo">—</div>
+          <div class="hero-sub" id="heroSaldoSub">informe seu salário ao lado</div>
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <div class="sum-card"><div class="label">Contas fixas</div><div class="value mono" id="sumFixas">R$ 0,00</div></div>
+        <div class="sum-card"><div class="label">Contas variáveis (mês)</div><div class="value mono" id="sumVariaveis">R$ 0,00</div></div>
+        <div class="sum-card"><div class="label">Parcelas ativas</div><div class="value mono" id="sumParcelas">R$ 0,00</div></div>
+        <div class="sum-card"><div class="label">Total de despesas</div><div class="value mono" id="sumTotalDespesas">R$ 0,00</div></div>
+      </div>
+
+      <h3 class="serif" style="margin-bottom:14px; font-size:1.2rem;">Extrato do mês</h3>
+      <div class="ledger" id="extratoMes"></div>
+
+      <h3 class="serif" style="margin:30px 0 14px; font-size:1.2rem;">Projetos em andamento</h3>
+      <div class="projects-grid" id="dashProjetos"></div>
+
+      <h3 class="serif" style="margin:30px 0 14px; font-size:1.2rem;">Comparativo de despesas por mês</h3>
+      <div class="chart-card" id="comparativoMeses"></div>
+    </section>
+
+    <!-- CONTAS FIXAS -->
+    <section class="page" id="page-fixas">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Contas fixas</h1>
+          <p class="page-desc">Aquelas que se repetem todo mês com valor parecido: aluguel, internet, academia, assinaturas.</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        <div class="form-card">
+          <h3>Nova conta fixa</h3>
+          <div class="field"><label>Nome</label><input id="fx-nome" placeholder="Ex: Aluguel"></div>
+          <div class="field-row">
+            <div class="field"><label>Valor (R$)</label><input id="fx-valor" type="number" step="0.01" placeholder="0,00"></div>
+            <div class="field"><label>Dia venc.</label><input id="fx-dia" type="number" min="1" max="31" placeholder="10"></div>
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select id="fx-cat">
+              <option>Moradia</option><option>Educação</option><option>Assinaturas</option>
+              <option>Saúde</option><option>Transporte</option><option>Outros</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="btnAddFixa">Adicionar conta fixa</button>
+        </div>
+        <div class="list-col" id="listaFixas"></div>
+      </div>
+    </section>
+
+    <!-- CONTAS VARIÁVEIS -->
+    <section class="page" id="page-variaveis">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Contas variáveis</h1>
+          <p class="page-desc">Gastos do mês que mudam de valor: mercado, lazer, roupas, imprevistos.</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        <div class="form-card">
+          <h3>Nova conta variável</h3>
+          <div class="field"><label>Nome</label><input id="vr-nome" placeholder="Ex: Mercado"></div>
+          <div class="field-row">
+            <div class="field"><label>Valor (R$)</label><input id="vr-valor" type="number" step="0.01" placeholder="0,00"></div>
+            <div class="field"><label>Mês</label><input id="vr-mes" type="month"></div>
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select id="vr-cat">
+              <option>Alimentação</option><option>Lazer</option><option>Vestuário</option>
+              <option>Saúde</option><option>Transporte</option><option>Outros</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="btnAddVariavel">Adicionar conta variável</button>
+        </div>
+        <div class="list-col" id="listaVariaveis"></div>
+      </div>
+    </section>
+
+    <!-- PARCELAMENTOS -->
+    <section class="page" id="page-parcelas">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Parcelamentos</h1>
+          <p class="page-desc">Compras parceladas. Acompanhe quanto falta pagar e dê baixa mês a mês.</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        <div class="form-card">
+          <h3>Novo parcelamento</h3>
+          <div class="field"><label>Nome</label><input id="pc-nome" placeholder="Ex: Notebook"></div>
+          <div class="field"><label>Valor total (R$)</label><input id="pc-total" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="field-row">
+            <div class="field"><label>Nº de parcelas</label><input id="pc-num" type="number" min="1" placeholder="12"></div>
+            <div class="field"><label>Já pagas</label><input id="pc-pagas" type="number" min="0" value="0"></div>
+          </div>
+          <button class="btn-primary" id="btnAddParcela">Adicionar parcelamento</button>
+        </div>
+        <div class="list-col" id="listaParcelas"></div>
+      </div>
+    </section>
+
+    <!-- PROJETOS -->
+    <section class="page" id="page-projetos">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Projetos & metas</h1>
+          <p class="page-desc">Uma viagem, uma reserva, uma compra grande — defina o valor e o prazo, e o app calcula quanto guardar por mês.</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        <div class="form-card">
+          <h3>Novo projeto</h3>
+          <div class="field"><label>Nome</label><input id="pj-nome" placeholder="Ex: Viagem a Floripa"></div>
+          <div class="field"><label>Emoji</label>
+            <select id="pj-emoji">
+              <option value="✈️">✈️ Viagem</option>
+              <option value="🏠">🏠 Casa</option>
+              <option value="🎓">🎓 Estudos</option>
+              <option value="💻">💻 Equipamento</option>
+              <option value="🚗">🚗 Veículo</option>
+              <option value="🛟">🛟 Reserva de emergência</option>
+              <option value="🎯">🎯 Outro</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Valor objetivo (R$)</label><input id="pj-objetivo" type="number" step="0.01" placeholder="0,00"></div>
+            <div class="field"><label>Já guardado (R$)</label><input id="pj-atual" type="number" step="0.01" value="0"></div>
+          </div>
+          <div class="field"><label>Data limite</label><input id="pj-data" type="date"></div>
+          <button class="btn-primary" id="btnAddProjeto">Criar projeto</button>
+        </div>
+        <div class="projects-grid" id="listaProjetos"></div>
+      </div>
+    </section>
+
+    <!-- SOBRE MIM -->
+    <section class="page" id="page-perfil">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Sobre mim</h1>
+          <p class="page-desc">Esses dados ajudam a personalizar seu painel — o salário aqui é o mesmo usado no cálculo da visão geral.</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        <div class="form-card" style="position:static;">
+          <h3>Meus dados</h3>
+          <div class="field"><label>Nome completo</label><input id="pf-nome" placeholder="Seu nome completo"></div>
+          <div class="field"><label>Salário mensal (R$)</label><input id="pf-salario" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="field">
+            <label>Banco de uso habitual</label>
+            <select id="pf-banco">
+              <option value="">Selecione…</option>
+              <option>Nubank</option>
+              <option>Banco do Brasil</option>
+              <option>Bradesco</option>
+              <option>Itaú</option>
+              <option>Santander</option>
+              <option>Caixa Econômica Federal</option>
+              <option>Inter</option>
+              <option>C6 Bank</option>
+              <option>PicPay</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="btnSalvarPerfil">Salvar alterações</button>
+        </div>
+        <div class="empty" style="align-self:start; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px;">
+          Essas informações ficam salvas neste navegador, junto com o restante dos seus dados financeiros.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
